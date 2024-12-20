@@ -1,7 +1,6 @@
 const express = require('express')
 const path = require('path')
-
-/* inserting a comment for testing purposes */
+const cool = require('cool-ascii-faces')
 
 const port = process.env.PORT || 5006
 
@@ -13,6 +12,19 @@ app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
   res.render('pages/index')
+})
+
+app.get('/cool', (req, res) => {
+  res.send(cool())
+})
+
+app.get('/times', (req, res) => {
+  const times = process.env.TIMES || 5
+  let result = ''
+  for (i = 0; i < times; i++) {
+    result += i + ' '
+  }
+  res.send(result)
 })
 
 const server = app.listen(port, () => {
