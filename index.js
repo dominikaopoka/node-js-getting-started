@@ -1,6 +1,14 @@
 const express = require('express')
 const path = require('path')
 const cool = require('cool-ascii-faces')
+const { Pool } = require('pg')
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+})
 
 const port = process.env.PORT || 5006
 
@@ -25,6 +33,20 @@ app.get('/times', (req, res) => {
     result += i + ' '
   }
   res.send(result)
+})
+
+app.get('/db', async (req, res) => {
+  try {
+    const client = await pool.connect()
+    const result = await client.query('SELECT * FROM test_table')
+    res.render('pages/db', {
+      results: result ? result.rows : null
+    })
+    client.release()
+  } catch (err) {
+    console.error(err);
+    res.send("Error " + err);
+  }
 })
 
 const server = app.listen(port, () => {
